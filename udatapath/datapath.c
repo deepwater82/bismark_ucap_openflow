@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "anonymization.h"
 #include "chain.h"
 #include "csum.h"
 #include "flow.h"
@@ -704,6 +705,7 @@ dp_output_control(struct datapath *dp, struct ofpbuf *buffer, int in_port,
     struct ofp_packet_in *opi;
     size_t total_len;
     uint32_t buffer_id;
+    struct ether_header* eth_header;
 
     buffer_id = save_buffer(buffer);
     total_len = buffer->size;
@@ -711,25 +713,9 @@ dp_output_control(struct datapath *dp, struct ofpbuf *buffer, int in_port,
         buffer->size = max_len;
     }
 
-    // ucap_rev
-    // Play with buffer->l2, fix MAC.
- 
-// FYI:
-//    struct ofpbuf {
-//        void *base;                 /* First byte of area malloc()'d area. */
-//        size_t allocated;           /* Number of bytes allocated. */
-//
-//        void *data;                 /* First byte actually in use. */
-//        size_t size;                /* Number of bytes in use. */
-//
-//        void *l2;                   /* Link-level header. */
-//        void *l3;                   /* Network-level header. */
-//        void *l4;                   /* Transport-level header. */
-//        void *l7;                   /* Application data. */
-//
-//        struct ofpbuf *next;        /* Next in a list of ofpbufs. */
-//        void *private;              /* Private pointer for use by owner. */
-//    };  
+    eth_header = (struct ether_header*)buffer->l2;
+    anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
+    anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
 
     opi = ofpbuf_push_uninit(buffer, offsetof(struct ofp_packet_in, data));
     opi->header.version = OFP_VERSION;
@@ -1266,10 +1252,10 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     uint16_t command;
     memcpy(ofm, msg, sizeof(struct ofp_flow_mod));
 
-    // Fix MAC here
-    //memcpy(fix_ofm.match.dl_src, "HASHED MAC", sizeof(uint8_t)*OFP_ETH_ALEN);
-    //memcpy(fix_ofm.match.dl_dst, "HASHED MAC", sizeof(uint8_t)*OFP_ETH_ALEN);
-    //
+    if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)
+            || deanonymize_mac(fix_ofm.match.dl_dst, fix_ofm.match.dl_dst)) {
+        return -ENODEV;
+    }
 
     command = ntohs(ofm->command);
    
