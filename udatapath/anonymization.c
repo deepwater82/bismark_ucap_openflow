@@ -79,8 +79,8 @@ void anonymize_mac(const uint8_t mac[ETH_ALEN], uint8_t digest[ETH_ALEN]) {
 
     memcpy(digest_table[digest_table_index].mac, mac, ETH_ALEN);
     anonymization_process(mac, ETH_ALEN, mac_digest);
+    memcpy(mac_digest, mac, ETH_ALEN / 2);
     memcpy(digest, mac_digest, ETH_ALEN);
-    memcpy(digest, mac, ETH_ALEN / 2);
     memcpy(digest_table[digest_table_index].digest, digest, ETH_ALEN);
 
     digest_table_index = (digest_table_index + 1) % DIGEST_TABLE_LEN;
