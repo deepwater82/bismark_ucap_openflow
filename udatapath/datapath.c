@@ -1251,7 +1251,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     struct ofp_flow_mod fix_ofm;
     struct ofp_flow_mod *ofm = &fix_ofm;
     uint16_t command;
-    memcpy(ofm, msg, sizeof(struct ofp_flow_mod));
+    memcpy(&fix_ofm, msg, sizeof(struct ofp_flow_mod));
 
     fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
     if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
