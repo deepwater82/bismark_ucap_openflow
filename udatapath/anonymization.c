@@ -92,6 +92,7 @@ void anonymize_mac(const uint8_t mac[ETH_ALEN], uint8_t digest[ETH_ALEN]) {
 int deanonymize_mac(const uint8_t digest[ETH_ALEN], uint8_t mac[ETH_ALEN]) {
     int idx;
     for (idx = 0; idx < digest_table_length; ++idx) {
+        fprintf(stderr, "Comparing %s to %s\n", buffer_to_hex(digest, ETH_ALEN), buffer_to_hex(digest_table[idx].digest, ETH_ALEN));
         if (memcmp(digest, digest_table[idx].digest, ETH_ALEN) == 0) {
             memcpy(mac, digest_table[idx].mac, ETH_ALEN);
             return 0;
