@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "anonymization.h"
 #include "command-line.h"
 #include "daemon.h"
 #include "datapath.h"
@@ -94,6 +95,10 @@ main(int argc, char *argv[])
     if (argc - optind < 1) {
         ofp_fatal(0, "at least one listener argument is required; "
           "use --help for usage");
+    }
+
+    if (anonymization_init()) {
+        ofp_fatal(0, "cannot initialize anonymization");
     }
 
     error = dp_new(&dp, dpid);
