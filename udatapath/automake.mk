@@ -14,6 +14,7 @@ udatapath_ofdatapath_SOURCES = \
 	udatapath/dp_act.h \
 	udatapath/of_ext_msg.c \
 	udatapath/of_ext_msg.h \
+	udatapath/polarssl_config.h \
 	udatapath/private-msg.c \
 	udatapath/private-msg.h \
 	udatapath/sha1.c \
