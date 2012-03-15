@@ -69,6 +69,7 @@ extern char hw_desc;
 extern char sw_desc;
 extern char dp_desc;
 extern char serial_num;
+struct ofp_flow_mod fix_ofm;
 
 /* Capabilities supported by this implementation. */
 #define OFP_SUPPORTED_CAPABILITIES ( OFPC_FLOW_STATS        \
@@ -1264,7 +1265,6 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     //const struct ofp_flow_mod *ofm = msg;
     //uint16_t command = ntohs(ofm->command);
 
-    struct ofp_flow_mod fix_ofm;
     struct ofp_flow_mod *ofm = (struct ofp_flow_mod*) msg;
     uint16_t command;
     memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
