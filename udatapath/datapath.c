@@ -378,6 +378,7 @@ dp_run(struct datapath *dp)
     }
     ofpbuf_delete(buffer);
 
+
     /* Talk to remotes. */
     LIST_FOR_EACH_SAFE (r, rn, struct remote, node, &dp->remotes) {
         remote_run(dp, r);
