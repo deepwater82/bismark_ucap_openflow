@@ -1249,9 +1249,10 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     //uint16_t command = ntohs(ofm->command);
 
     struct ofp_flow_mod fix_ofm;
-    struct ofp_flow_mod *ofm = &fix_ofm;
+    struct ofp_flow_mod *ofm = (struct ofp_flow_mod*) msg;
     uint16_t command;
-    memcpy(&fix_ofm, msg, sizeof(struct ofp_flow_mod));
+    memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
+    ofm = &fix_ofm;
 
     if ((fix_ofm.match.wildcards & OFPFW_DL_SRC) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
