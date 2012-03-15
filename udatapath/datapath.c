@@ -714,9 +714,9 @@ dp_output_control(struct datapath *dp, struct ofpbuf *buffer, int in_port,
         buffer->size = max_len;
     }
 
-    //eth_header = (struct ether_header*)buffer->l2;
-    //anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
-    //anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
+    eth_header = (struct ether_header*)buffer->l2;
+    anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
+    anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
 
     opi = ofpbuf_push_uninit(buffer, offsetof(struct ofp_packet_in, data));
     opi->header.version = OFP_VERSION;
@@ -1131,6 +1131,7 @@ add_flow(struct datapath *dp, const struct sender *sender,
     flow->emerg_flow = (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0;
     flow_setup_actions(flow, ofm->actions, actions_len);
 
+    goto error_free_flow; //joon
     /* Act. */
     error = chain_insert(dp->chain, flow,
                          (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0);
@@ -1253,7 +1254,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     uint16_t command;
     memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
     ofm = &fix_ofm;
-/*
+
     if ((ntohl(fix_ofm.match.wildcards) & OFPFW_DL_SRC) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
         if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
@@ -1272,7 +1273,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
             fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
         }
     }
-*/
+
     command = ntohs(ofm->command);
    
     if (command == OFPFC_ADD) {
