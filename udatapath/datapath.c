@@ -1245,15 +1245,15 @@ recv_flow(struct datapath *dp, const struct sender *sender,
           const void *msg)
 {
     // ucap_rev
-    const struct ofp_flow_mod *ofm = msg;
-    uint16_t command = ntohs(ofm->command);
-/*
+    //const struct ofp_flow_mod *ofm = msg;
+    //uint16_t command = ntohs(ofm->command);
+
     struct ofp_flow_mod fix_ofm;
     struct ofp_flow_mod *ofm = (struct ofp_flow_mod*) msg;
     uint16_t command;
     memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
     ofm = &fix_ofm;
-
+/*
     if ((ntohl(fix_ofm.match.wildcards) & OFPFW_DL_SRC) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
         if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
@@ -1272,9 +1272,9 @@ recv_flow(struct datapath *dp, const struct sender *sender,
             fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
         }
     }
-
+*/
     command = ntohs(ofm->command);
-*/   
+   
     if (command == OFPFC_ADD) {
         return add_flow(dp, sender, ofm);
     } else if ((command == OFPFC_MODIFY) || (command == OFPFC_MODIFY_STRICT)) {
