@@ -383,7 +383,6 @@ dp_run(struct datapath *dp)
         remote_run(dp, r);
     }
 
-    fprintf(stderr, "Debug 8\n");
     for (i = 0; i < dp->n_listeners; ) {
         struct pvconn *pvconn = dp->listeners[i];
         struct vconn *new_vconn;
@@ -397,7 +396,6 @@ dp_run(struct datapath *dp)
         }
         i++;
     }
-    fprintf(stderr, "Debug 9\n");
 }
 
 static void
@@ -419,7 +417,6 @@ remote_run(struct datapath *dp, struct remote *r)
                 break;
             }
 
-            fprintf(stderr, "Debug 1\n");
             if (buffer->size >= sizeof *oh) {
                 struct sender sender;
 
@@ -427,14 +424,11 @@ remote_run(struct datapath *dp, struct remote *r)
                 sender.remote = r;
                 sender.xid = oh->xid;
                 fwd_control_input(dp, &sender, buffer->data, buffer->size);
-                fprintf(stderr, "Debug 2\n");
             } else {
                 VLOG_WARN_RL(&rl, "received too-short OpenFlow message");
             }
 
-            fprintf(stderr, "Debug 3\n");
             ofpbuf_delete(buffer);
-            fprintf(stderr, "Debug 4\n");
         } else {
             if (r->n_txq < TXQ_LIMIT) {
                 int error = r->cb_dump(dp, r->cb_aux);
@@ -452,11 +446,9 @@ remote_run(struct datapath *dp, struct remote *r)
         }
     }
 
-    fprintf(stderr, "Debug 5\n");
     if (!rconn_is_alive(r->rconn)) {
         remote_destroy(r);
     }
-    fprintf(stderr, "Debug 6\n");
 }
 
 static void
@@ -1096,16 +1088,13 @@ add_flow(struct datapath *dp, const struct sender *sender,
     size_t actions_len = ntohs(ofm->header.length) - sizeof *ofm;
     int overlap;
     
-    fprintf(stderr, "Debug 1.3.1\n");
     /* Allocate memory. */
     flow = flow_alloc(actions_len);
     if (flow == NULL)
         goto error;
 
-    fprintf(stderr, "Debug 1.3.2\n");
     flow_extract_match(&flow->key, &ofm->match);
 
-    fprintf(stderr, "Debug 1.3.3\n");
     v_code = validate_actions(dp, &flow->key, ofm->actions, actions_len);
     if (v_code != ACT_VALIDATION_OK) {
         dp_send_error_msg(dp, sender, OFPET_BAD_ACTION, v_code,
@@ -1115,7 +1104,6 @@ add_flow(struct datapath *dp, const struct sender *sender,
 
     flow->priority = flow->key.wildcards ? ntohs(ofm->priority) : -1;
 
-    fprintf(stderr, "Debug 1.3.4\n");
     if (ntohs(ofm->flags) & OFPFF_CHECK_OVERLAP) {
         /* check whether there is any conflict */
         overlap = chain_has_conflict(dp->chain, &flow->key, flow->priority,
@@ -1127,7 +1115,6 @@ add_flow(struct datapath *dp, const struct sender *sender,
         }
     }
 
-    fprintf(stderr, "Debug 1.3.5\n");
     if (ntohs(ofm->flags) & OFPFF_EMERG) {
         if (ntohs(ofm->idle_timeout) != OFP_FLOW_PERMANENT
             || ntohs(ofm->hard_timeout) != OFP_FLOW_PERMANENT) {
@@ -1138,7 +1125,6 @@ add_flow(struct datapath *dp, const struct sender *sender,
         }
     }
 
-    fprintf(stderr, "Debug 1.3.6\n");
     /* Fill out flow. */
     flow->cookie = ntohll(ofm->cookie);
     flow->idle_timeout = ntohs(ofm->idle_timeout);
@@ -1270,7 +1256,6 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
     ofm = &fix_ofm;
 
-    fprintf(stderr, "Debug 1.1\n");
     if ((ntohl(fix_ofm.match.wildcards) & OFPFW_DL_SRC) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
         if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
@@ -1290,9 +1275,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
         }
     }
    
-    fprintf(stderr, "Debug 1.2\n");
     command = ntohs(ofm->command);
-    fprintf(stderr, "Debug 1.3.command:%d\n",command);
    
     if (command == OFPFC_ADD) {
         return add_flow(dp, sender, ofm);
