@@ -1086,6 +1086,7 @@ add_flow(struct datapath *dp, const struct sender *sender,
     size_t actions_len = ntohs(ofm->header.length) - sizeof *ofm;
     int overlap;
 
+    goto error_free_flow; //joon
     /* Allocate memory. */
     flow = flow_alloc(actions_len);
     if (flow == NULL)
@@ -1131,7 +1132,6 @@ add_flow(struct datapath *dp, const struct sender *sender,
     flow->emerg_flow = (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0;
     flow_setup_actions(flow, ofm->actions, actions_len);
 
-    goto error_free_flow; //joon
     /* Act. */
     error = chain_insert(dp->chain, flow,
                          (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0);
