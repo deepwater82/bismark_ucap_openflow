@@ -1254,18 +1254,22 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     memcpy(&fix_ofm, msg, sizeof(struct ofp_flow_mod));
 
     fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
-    if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
-        fprintf(stderr, " -> unknown\n");
-        return -ENODEV;
-    } else {
-        fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
+    if ((fix_ofm.match.wildcards & OFPFW_DL_SRC) == 0) {
+        if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
+            fprintf(stderr, " -> unknown\n");
+            return -ENODEV;
+        } else {
+            fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
+        }
     }
     fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
-    if (deanonymize_mac(fix_ofm.match.dl_dst, fix_ofm.match.dl_dst)) {
-        fprintf(stderr, " -> unknown\n");
-        return -ENODEV;
-    } else {
-        fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
+    if ((fix_ofm.match.wildcards & OFPFW_DL_DST) == 0) {
+        if (deanonymize_mac(fix_ofm.match.dl_dst, fix_ofm.match.dl_dst)) {
+            fprintf(stderr, " -> unknown\n");
+            return -ENODEV;
+        } else {
+            fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
+        }
     }
 
     command = ntohs(ofm->command);
