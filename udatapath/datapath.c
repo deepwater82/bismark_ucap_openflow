@@ -1080,13 +1080,15 @@ static int
 add_flow(struct datapath *dp, const struct sender *sender,
         const struct ofp_flow_mod *ofm)
 {
+    fprintf(stderr, "Debug 1\n");
     int error = -ENOMEM;
     uint16_t v_code;
     struct sw_flow *flow;
     size_t actions_len = ntohs(ofm->header.length) - sizeof *ofm;
     int overlap;
+    
+    fprintf(stderr, "Debug 2\n");
 
-    goto error_free_flow; //joon
     /* Allocate memory. */
     flow = flow_alloc(actions_len);
     if (flow == NULL)
@@ -1101,6 +1103,7 @@ add_flow(struct datapath *dp, const struct sender *sender,
         goto error_free_flow;
     }
 
+    fprintf(stderr, "Debug 3\n");
     flow->priority = flow->key.wildcards ? ntohs(ofm->priority) : -1;
 
     if (ntohs(ofm->flags) & OFPFF_CHECK_OVERLAP) {
@@ -1114,6 +1117,7 @@ add_flow(struct datapath *dp, const struct sender *sender,
         }
     }
 
+    fprintf(stderr, "Debug 4\n");
     if (ntohs(ofm->flags) & OFPFF_EMERG) {
         if (ntohs(ofm->idle_timeout) != OFP_FLOW_PERMANENT
             || ntohs(ofm->hard_timeout) != OFP_FLOW_PERMANENT) {
@@ -1132,6 +1136,7 @@ add_flow(struct datapath *dp, const struct sender *sender,
     flow->emerg_flow = (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0;
     flow_setup_actions(flow, ofm->actions, actions_len);
 
+    fprintf(stderr, "Debug 5\n");
     /* Act. */
     error = chain_insert(dp->chain, flow,
                          (ntohs(ofm->flags) & OFPFF_EMERG) ? 1 : 0);
@@ -1273,9 +1278,13 @@ recv_flow(struct datapath *dp, const struct sender *sender,
             fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
         }
     }
+   
+    fprintf(stderr, "About to print command\n");
 
     command = ntohs(ofm->command);
    
+    fprintf(stderr, "command:%d\n", command);
+
     if (command == OFPFC_ADD) {
         return add_flow(dp, sender, ofm);
     } else if ((command == OFPFC_MODIFY) || (command == OFPFC_MODIFY_STRICT)) {
