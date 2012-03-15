@@ -714,9 +714,9 @@ dp_output_control(struct datapath *dp, struct ofpbuf *buffer, int in_port,
         buffer->size = max_len;
     }
 
-    eth_header = (struct ether_header*)buffer->l2;
-    anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
-    anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
+    //eth_header = (struct ether_header*)buffer->l2;
+    //anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
+    //anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
 
     opi = ofpbuf_push_uninit(buffer, offsetof(struct ofp_packet_in, data));
     opi->header.version = OFP_VERSION;
@@ -1245,9 +1245,9 @@ recv_flow(struct datapath *dp, const struct sender *sender,
           const void *msg)
 {
     // ucap_rev
-    //const struct ofp_flow_mod *ofm = msg;
-    //uint16_t command = ntohs(ofm->command);
-
+    const struct ofp_flow_mod *ofm = msg;
+    uint16_t command = ntohs(ofm->command);
+/*
     struct ofp_flow_mod fix_ofm;
     struct ofp_flow_mod *ofm = (struct ofp_flow_mod*) msg;
     uint16_t command;
@@ -1274,7 +1274,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     }
 
     command = ntohs(ofm->command);
-   
+*/   
     if (command == OFPFC_ADD) {
         return add_flow(dp, sender, ofm);
     } else if ((command == OFPFC_MODIFY) || (command == OFPFC_MODIFY_STRICT)) {
