@@ -1254,7 +1254,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
     memcpy(&fix_ofm, msg, ntohs(ofm->header.length));
     ofm = &fix_ofm;
 
-    if ((fix_ofm.match.wildcards & OFPFW_DL_SRC) == 0) {
+    if ((ntohl(fix_ofm.match.wildcards) & OFPFW_DL_SRC) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
         if (deanonymize_mac(fix_ofm.match.dl_src, fix_ofm.match.dl_src)) {
             fprintf(stderr, " -> unknown\n");
@@ -1263,7 +1263,7 @@ recv_flow(struct datapath *dp, const struct sender *sender,
             fprintf(stderr, " -> %s\n", buffer_to_hex(fix_ofm.match.dl_src, ETH_ALEN));
         }
     }
-    if ((fix_ofm.match.wildcards & OFPFW_DL_DST) == 0) {
+    if ((ntohl(fix_ofm.match.wildcards) & OFPFW_DL_DST) == 0) {
         fprintf(stderr, "Deanonymize: %s", buffer_to_hex(fix_ofm.match.dl_dst, ETH_ALEN));
         if (deanonymize_mac(fix_ofm.match.dl_dst, fix_ofm.match.dl_dst)) {
             fprintf(stderr, " -> unknown\n");
