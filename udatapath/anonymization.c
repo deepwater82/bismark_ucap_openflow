@@ -87,6 +87,9 @@ void anonymize_mac(const uint8_t mac[ETH_ALEN], uint8_t digest[ETH_ALEN]) {
     if (digest_table_length < DIGEST_TABLE_LEN) {
         ++digest_table_length;
     }
+
+    fprintf(stderr, "SEED_digest: %s\n", seed_hex_digest);
+
 }
 
 int deanonymize_mac(const uint8_t digest[ETH_ALEN], uint8_t mac[ETH_ALEN]) {
