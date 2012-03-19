@@ -718,8 +718,12 @@ dp_output_control(struct datapath *dp, struct ofpbuf *buffer, int in_port,
     }
 
     eth_header = (struct ether_header*)buffer->l2;
+    fprintf(stderr, "Anonymize SRC: %s ==>", buffer_to_hex(eth_header->ether_shost, ETH_ALEN));
     anonymize_mac(eth_header->ether_shost, eth_header->ether_shost);
+    fprintf(stderr, " %s.\n", buffer_to_hex(eth_header->ether_shost, ETH_ALEN));
+    fprintf(stderr, "Anonymize DST: %s ==>", buffer_to_hex(eth_header->ether_dhost, ETH_ALEN));
     anonymize_mac(eth_header->ether_dhost, eth_header->ether_dhost);
+    fprintf(stderr, " %s.\n", buffer_to_hex(eth_header->ether_dhost, ETH_ALEN));
 
     opi = ofpbuf_push_uninit(buffer, offsetof(struct ofp_packet_in, data));
     opi->header.version = OFP_VERSION;
